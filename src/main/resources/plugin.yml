@@ -1,0 +1,7 @@
+name: TrialEconomy
+version: '${project.version}'
+main: com.projecki.trialeconomy.TrialEconomy
+api-version: 1.17
+commands:
+  balance:
+    permission: 'trialeconomy.balance'

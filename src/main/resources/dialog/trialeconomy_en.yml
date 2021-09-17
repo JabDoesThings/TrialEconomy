@@ -1,0 +1,53 @@
+# player -> The name of the player.
+player_not_found: '&c[TrialEconomy] The player %player% is not found.'
+
+# player -> The name of the player.
+no_profile: '&c[TrialEconomy] The player %player% does not have an account.'
+
+# player -> The name of the player.
+# balance -> The amount the player has.
+insufficient_balance: '&c[TrialEconomy] The player %player% does not have enough balance. (balance: %balance%)'
+
+# amount -> The amount provided.
+negative_amount_given: '&c[TrialEconomy] The amount given cannot be negative. (amount: %amount%)'
+
+# amount -> The amount provided.
+invalid_amount_given: '&c[TrialEconomy] The amount given is not a value. (given: %amount%)'
+
+## Help
+command_help: '&7[TrialEconomy] /balance [ deposit | report | set | withdraw ]'
+
+
+## Deposit sub-command
+command_deposit_help: '&7[TrialEconomy] /balance deposit [player] [amount]'
+
+# amount -> The amount deposited.
+# balance -> The new balance.
+# player -> The name of the player.
+command_deposit_success: '&a[TrialEconomy] Successfully deposited %amount% for player: %player% (New balance: %balance%)'
+
+
+## Report sub-command
+command_report_help: '&7[TrialEconomy] /balance report [player]'
+
+# balance -> The current balance.
+# player -> The name of the player.
+command_report_success: '&a[TrialEconomy] %player% has a balance of %balance%.'
+
+
+## Set sub-command
+command_set_help: '&7[TrialEconomy] /balance set [player] [amount]'
+
+# balance -> The new balance.
+# player -> The name of the player.
+command_set_success: "&a[TrialEconomy] Set %player%'s balance to %balance%."
+
+
+## Withdraw sub-command
+command_withdraw_help: '&7[TrialEconomy] /balance withdraw [player] [amount]'
+
+# amount -> The amount withdrawn.
+# balance -> The new balance.
+# player -> The name of the player.
+command_withdraw_success: '&a[TrialEconomy] Successfully withdrawn %amount% from player: %player% (New balance: %balance%)'
+
