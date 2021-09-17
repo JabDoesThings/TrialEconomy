@@ -1,8 +1,10 @@
+## General dialog
+
 # player -> The name of the player.
 player_not_found: '&c[TrialEconomy] The player %player% is not found.'
 
 # player -> The name of the player.
-no_profile: '&c[TrialEconomy] The player %player% does not have an account.'
+no_account: '&c[TrialEconomy] The player %player% does not have an account.'
 
 # player -> The name of the player.
 # balance -> The amount the player has.
@@ -50,4 +52,3 @@ command_withdraw_help: '&7[TrialEconomy] /balance withdraw [player] [amount]'
 # balance -> The new balance.
 # player -> The name of the player.
 command_withdraw_success: '&a[TrialEconomy] Successfully withdrawn %amount% from player: %player% (New balance: %balance%)'
-

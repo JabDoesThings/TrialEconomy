@@ -26,7 +26,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 /**
- * <b>TrialEconomy</b> is the API accessor for the player-economy plugin.
+ * <b>TrialEconomy</b> is the API accessor and JavaPlugin class for TrialEconomy.
  *
  * @author Jab
  */
@@ -35,11 +35,14 @@ public final class TrialEconomy extends JavaPlugin implements Listener {
   public static TrialEconomy INSTANCE;
   public static Logger logger;
 
-  private final Map<UUID, EconomyProfile> profiles = new HashMap<>();
+  /** All online-player accounts are stored here. */
+  private final Map<UUID, PlayerAccount> accounts = new HashMap<>();
 
+  /** The internal database management. */
   @Getter(AccessLevel.PACKAGE)
   private Database database;
 
+  /** All dialog for the plugin. */
   @Getter private Dialog dialog;
 
   @Override
@@ -50,7 +53,7 @@ public final class TrialEconomy extends JavaPlugin implements Listener {
 
     if (!loadDialog()) return;
 
-    MySQLCredentials credentials = getCredentials();
+    Database.Credentials credentials = getCredentials();
     if (credentials == null) return;
 
     database = new Database(credentials);
@@ -77,22 +80,22 @@ public final class TrialEconomy extends JavaPlugin implements Listener {
   @Override
   public void onDisable() {
 
-    if (!profiles.isEmpty()) {
+    if (!accounts.isEmpty()) {
 
-      // If any profiles are loaded, save them.
-      for (UUID playerId : profiles.keySet()) {
+      // If any accounts are loaded, save them.
+      for (UUID playerId : accounts.keySet()) {
 
-        EconomyProfile profile = profiles.get(playerId);
+        PlayerAccount account = accounts.get(playerId);
 
         try {
-          database.save(profile);
+          database.save(account);
         } catch (SQLException e) {
-          logger.warning("Failed to save EconomyProfile for player: " + profile.getPlayerName());
+          logger.warning("Failed to save account for player: " + account.getPlayerName());
           e.printStackTrace(System.err);
         }
       }
 
-      profiles.clear();
+      accounts.clear();
     }
 
     if (database != null) {
@@ -117,7 +120,7 @@ public final class TrialEconomy extends JavaPlugin implements Listener {
   }
 
   @Nullable
-  private MySQLCredentials getCredentials() {
+  private Database.Credentials getCredentials() {
 
     File fileCredentials = new File(getDataFolder(), "credentials.yml");
 
@@ -138,7 +141,7 @@ public final class TrialEconomy extends JavaPlugin implements Listener {
 
     ConfigurationSection cfgMySQLCredentials =
         Objects.requireNonNull(cfgCredentials.getConfigurationSection("mysql"));
-    return new MySQLCredentials(cfgMySQLCredentials);
+    return new Database.Credentials(cfgMySQLCredentials);
   }
 
   private boolean loadDialog() {
@@ -149,9 +152,9 @@ public final class TrialEconomy extends JavaPlugin implements Listener {
       return false;
     }
 
-    File fileDialogTrialEconomyEn = new File(folderDialog, "trialeconomy_en.yml");
+    File fileDialogTrialEconomyEn = new File(folderDialog, "trial_economy_en.yml");
     if (!fileDialogTrialEconomyEn.exists()) {
-      saveResource("dialog/trialeconomy_en.yml", false);
+      saveResource("dialog/trial_economy_en.yml", false);
     }
 
     ConfigurationSection cfgDialogEn =
@@ -163,35 +166,35 @@ public final class TrialEconomy extends JavaPlugin implements Listener {
 
   private void load(@NotNull Player player) {
 
-    EconomyProfile profile = null;
+    PlayerAccount account = null;
 
     try {
-      profile = database.getOrCreateProfile(player);
+      account = database.getOrCreateAccount(player);
     } catch (SQLException e) {
       e.printStackTrace(System.err);
       disable("A MySQL error occurred.");
     }
 
-    profiles.put(player.getUniqueId(), profile);
+    accounts.put(player.getUniqueId(), account);
   }
 
   private void save(@NotNull UUID playerId) {
 
-    if (!profiles.containsKey(playerId)) return;
+    if (!accounts.containsKey(playerId)) return;
 
-    EconomyProfile profile = profiles.remove(playerId);
+    PlayerAccount account = accounts.remove(playerId);
 
     try {
-      database.save(profile);
+      database.save(account);
     } catch (SQLException e) {
       e.printStackTrace(System.err);
       disable("A MySQL error occurred.");
     }
   }
 
-  public void save(@NotNull EconomyProfile profile) {
+  void save(@NotNull PlayerAccount account) {
     try {
-      database.save(profile);
+      database.save(account);
     } catch (SQLException e) {
       INSTANCE.disable("A MySQL error occurred.");
       e.printStackTrace();
@@ -203,19 +206,33 @@ public final class TrialEconomy extends JavaPlugin implements Listener {
     getPluginLoader().disablePlugin(this);
   }
 
+  /**
+   * Gets the account for a player.
+   *
+   * <p><b>NOTE:</b> Use {@link TrialEconomy#hasAccount(UUID)} to check if the player has an account
+   * before using this method.
+   *
+   * @param offlinePlayer The player associated with the account.
+   * @return The account of the player.
+   * @throws NullPointerException Thrown if the player doesn't have an account.
+   */
   @NotNull
-  public static EconomyProfile getProfile(@NotNull OfflinePlayer offlinePlayer) {
+  public static PlayerAccount getAccount(@NotNull OfflinePlayer offlinePlayer) {
+
+    PlayerAccount account = INSTANCE.accounts.get(offlinePlayer.getUniqueId());
+
+    if (account != null) return account;
 
     try {
 
-      EconomyProfile profile = INSTANCE.database.getProfile(offlinePlayer);
+      account = INSTANCE.database.getAccount(offlinePlayer);
 
-      if (profile == null) {
+      if (account == null) {
         throw new NullPointerException(
-            "No EconomyProfile exists for the player: " + offlinePlayer.getName());
+            "No account exists for the player: " + offlinePlayer.getName());
       }
 
-      return profile;
+      return account;
 
     } catch (SQLException e) {
       INSTANCE.disable("A MySQL error occurred.");
@@ -226,10 +243,10 @@ public final class TrialEconomy extends JavaPlugin implements Listener {
     return null;
   }
 
-  public static boolean hasProfile(@NotNull UUID playerId) {
+  public static boolean hasAccount(@NotNull UUID playerId) {
 
     try {
-      return INSTANCE.database.hasProfile(playerId);
+      return INSTANCE.accounts.containsKey(playerId) || INSTANCE.database.hasAccount(playerId);
     } catch (SQLException e) {
       INSTANCE.disable("A MySQL error occurred.");
       e.printStackTrace();
