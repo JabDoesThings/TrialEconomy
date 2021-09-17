@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author Jab
  */
-public class BalanceCommand implements CommandExecutor, TabCompleter {
+class BalanceCommand implements CommandExecutor, TabCompleter {
 
   @Override
   public boolean onCommand(

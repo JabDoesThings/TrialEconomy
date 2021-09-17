@@ -15,7 +15,7 @@ import java.util.Map;
  *
  * @author Jab
  */
-public class Dialog {
+class Dialog {
 
   private final Map<String, String> dialog = new HashMap<>();
 

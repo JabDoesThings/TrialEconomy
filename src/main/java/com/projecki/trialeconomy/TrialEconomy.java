@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 public final class TrialEconomy extends JavaPlugin implements Listener {
 
   public static TrialEconomy INSTANCE;
-  public static Logger logger;
+  static Logger logger;
 
   /** All online-player accounts are stored here. */
   private final Map<UUID, PlayerAccount> accounts = new HashMap<>();
@@ -243,6 +243,10 @@ public final class TrialEconomy extends JavaPlugin implements Listener {
     return null;
   }
 
+  /**
+   * @param playerId The player ID to test.
+   * @return Returns true if the player has an account.
+   */
   public static boolean hasAccount(@NotNull UUID playerId) {
 
     try {

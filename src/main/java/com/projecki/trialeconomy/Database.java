@@ -93,7 +93,7 @@ class Database {
    *     queries.
    */
   @NotNull
-  public PlayerAccount getOrCreateAccount(@NotNull Player player) throws SQLException {
+  PlayerAccount getOrCreateAccount(@NotNull Player player) throws SQLException {
 
     String sql = "SELECT * FROM " + TABLE_ACCOUNTS + " WHERE player_id = ?;";
 
@@ -171,7 +171,7 @@ class Database {
    * @throws SQLException Thrown if an exception occurs while performing MySQL queries.
    */
   @Nullable
-  public PlayerAccount getAccount(@NotNull OfflinePlayer player) throws SQLException {
+  PlayerAccount getAccount(@NotNull OfflinePlayer player) throws SQLException {
 
     PlayerAccount account = null;
 
@@ -202,7 +202,7 @@ class Database {
    * @throws NullPointerException Thrown if the playerId is null.
    * @throws SQLException Thrown if an exception occurs while performing MySQL queries.
    */
-  public boolean hasAccount(@NotNull UUID playerId) throws SQLException {
+  boolean hasAccount(@NotNull UUID playerId) throws SQLException {
 
     boolean found;
     byte[] playerIdBytes = toBytes(playerId);
@@ -227,7 +227,7 @@ class Database {
    * @return A byte array of 16 in length.
    * @throws NullPointerException Thrown if the uuid is null.
    */
-  public static byte[] toBytes(@NotNull UUID uuid) {
+  private static byte[] toBytes(@NotNull UUID uuid) {
 
     byte[] first = toBytes(uuid.getMostSignificantBits());
     byte[] second = toBytes(uuid.getLeastSignificantBits());
@@ -246,7 +246,7 @@ class Database {
    * @param value The long to unpack.
    * @return An array of 8 bytes.
    */
-  public static byte[] toBytes(long value) {
+  private static byte[] toBytes(long value) {
 
     byte[] bytes = new byte[8];
 
@@ -266,8 +266,7 @@ class Database {
   static class Credentials {
 
     /** The host URL for the service. (E.G: localhost, IP, domain, etc.) */
-    @Getter
-    private final String host;
+    @Getter private final String host;
 
     /** The port the service is listening on. */
     @Getter private final int port;
@@ -299,7 +298,8 @@ class Database {
 
     /**
      * @return A new connection instance for the SQL database.
-     * @throws SQLException Thrown if the attempt to establish a connection to the SQL database fails.
+     * @throws SQLException Thrown if the attempt to establish a connection to the SQL database
+     *     fails.
      */
     @NotNull
     Connection newConnection() throws SQLException {
