@@ -32,6 +32,19 @@ class Dialog {
   }
 
   /**
+   * Colors a string using the alternative color code '&'.
+   *
+   * @param string The string to color.
+   * @return The colored string. If the string is null, null is returned. If the string is empty, an
+   *     empty string is returned.
+   */
+  @Nullable
+  private static String color(@Nullable String string) {
+    if (string == null || string.isEmpty()) return string;
+    return ChatColor.translateAlternateColorCodes('&', string);
+  }
+
+  /**
    * @param id The id of the dialog text field.
    * @param args (Optional) arguments to inject in the text.
    * @return The dialog text.
@@ -58,29 +71,15 @@ class Dialog {
   }
 
   /**
-   * Colors a string using the alternative color code '&'.
-   *
-   * @param string The string to color.
-   * @return The colored string. If the string is null, null is returned. If the string is empty, an
-   *     empty string is returned.
-   */
-  @Nullable
-  private static String color(@Nullable String string) {
-    if (string == null || string.isEmpty()) return string;
-    return ChatColor.translateAlternateColorCodes('&', string);
-  }
-
-  /**
-   * <b>DialogArg</b> is a simple argument struct for providing values to inject into dialog text for
-   * the Dialog utility.
+   * <b>DialogArg</b> is a simple argument struct for providing values to inject into dialog text
+   * for the Dialog utility.
    *
    * @author Jab
    */
   static class Arg {
 
     /** The ID of the value. Identified in dialog text as '%id%'. */
-    @Getter
-    private final String id;
+    @Getter private final String id;
 
     /** The value to inject. */
     private final Object value;

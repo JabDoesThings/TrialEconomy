@@ -36,6 +36,44 @@ class Database {
   }
 
   /**
+   * Packages a UUID as a byte array of 16 in length.
+   *
+   * @param uuid The UUID to convert.
+   * @return A byte array of 16 in length.
+   * @throws NullPointerException Thrown if the uuid is null.
+   */
+  private static byte[] toBytes(@NotNull UUID uuid) {
+
+    byte[] first = toBytes(uuid.getMostSignificantBits());
+    byte[] second = toBytes(uuid.getLeastSignificantBits());
+
+    byte[] bytes = new byte[16];
+
+    System.arraycopy(first, 0, bytes, 0, 8);
+    System.arraycopy(second, 0, bytes, 8, 8);
+
+    return bytes;
+  }
+
+  /**
+   * Unpacks a long to an array of 8 bytes.
+   *
+   * @param value The long to unpack.
+   * @return An array of 8 bytes.
+   */
+  private static byte[] toBytes(long value) {
+
+    byte[] bytes = new byte[8];
+
+    for (int offset = 0; offset < bytes.length; offset++) {
+      bytes[offset] = Long.valueOf(value & 0xff).byteValue();
+      value = value >> 8;
+    }
+
+    return bytes;
+  }
+
+  /**
    * Connects to the MySQL database.
    *
    * @throws SQLException Thrown if an exception occurs while connecting to the remote MySQL
@@ -221,44 +259,6 @@ class Database {
   }
 
   /**
-   * Packages a UUID as a byte array of 16 in length.
-   *
-   * @param uuid The UUID to convert.
-   * @return A byte array of 16 in length.
-   * @throws NullPointerException Thrown if the uuid is null.
-   */
-  private static byte[] toBytes(@NotNull UUID uuid) {
-
-    byte[] first = toBytes(uuid.getMostSignificantBits());
-    byte[] second = toBytes(uuid.getLeastSignificantBits());
-
-    byte[] bytes = new byte[16];
-
-    System.arraycopy(first, 0, bytes, 0, 8);
-    System.arraycopy(second, 0, bytes, 8, 8);
-
-    return bytes;
-  }
-
-  /**
-   * Unpacks a long to an array of 8 bytes.
-   *
-   * @param value The long to unpack.
-   * @return An array of 8 bytes.
-   */
-  private static byte[] toBytes(long value) {
-
-    byte[] bytes = new byte[8];
-
-    for (int offset = 0; offset < bytes.length; offset++) {
-      bytes[offset] = Long.valueOf(value & 0xff).byteValue();
-      value = value >> 8;
-    }
-
-    return bytes;
-  }
-
-  /**
    * <b>Credentials</b> handles building JDBC URLs {@literal &} creating MySQL connections.
    *
    * @author Jab
@@ -294,16 +294,6 @@ class Database {
       if (port == 0) throw new YAMLException("The field 'port' is zero.");
 
       this.jdbcUrl = "jdbc:mysql://" + host + ":" + port + "/" + database;
-    }
-
-    /**
-     * @return A new connection instance for the SQL database.
-     * @throws SQLException Thrown if the attempt to establish a connection to the SQL database
-     *     fails.
-     */
-    @NotNull
-    Connection newConnection() throws SQLException {
-      return DriverManager.getConnection(jdbcUrl, username, password);
     }
 
     /**
@@ -354,6 +344,16 @@ class Database {
       }
 
       return value;
+    }
+
+    /**
+     * @return A new connection instance for the SQL database.
+     * @throws SQLException Thrown if the attempt to establish a connection to the SQL database
+     *     fails.
+     */
+    @NotNull
+    Connection newConnection() throws SQLException {
+      return DriverManager.getConnection(jdbcUrl, username, password);
     }
   }
 }

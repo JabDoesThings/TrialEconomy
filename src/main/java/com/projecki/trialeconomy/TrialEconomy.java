@@ -45,6 +45,59 @@ public final class TrialEconomy extends JavaPlugin implements Listener {
   /** All dialog for the plugin. */
   @Getter private Dialog dialog;
 
+  /**
+   * Gets the account for a player.
+   *
+   * <p><b>NOTE:</b> Use {@link TrialEconomy#hasAccount(UUID)} to check if the player has an account
+   * before using this method.
+   *
+   * @param offlinePlayer The player associated with the account.
+   * @return The account of the player.
+   * @throws NullPointerException Thrown if the player doesn't have an account.
+   */
+  @NotNull
+  public static PlayerAccount getAccount(@NotNull OfflinePlayer offlinePlayer) {
+
+    PlayerAccount account = INSTANCE.accounts.get(offlinePlayer.getUniqueId());
+
+    if (account != null) return account;
+
+    try {
+
+      account = INSTANCE.database.getAccount(offlinePlayer);
+
+      if (account == null) {
+        throw new NullPointerException(
+            "No account exists for the player: " + offlinePlayer.getName());
+      }
+
+      return account;
+
+    } catch (SQLException e) {
+      INSTANCE.disable("A MySQL error occurred.");
+      e.printStackTrace();
+    }
+
+    //noinspection ConstantConditions
+    return null;
+  }
+
+  /**
+   * @param playerId The player ID to test.
+   * @return Returns true if the player has an account.
+   */
+  public static boolean hasAccount(@NotNull UUID playerId) {
+
+    try {
+      return INSTANCE.accounts.containsKey(playerId) || INSTANCE.database.hasAccount(playerId);
+    } catch (SQLException e) {
+      INSTANCE.disable("A MySQL error occurred.");
+      e.printStackTrace();
+    }
+
+    return false;
+  }
+
   @Override
   public void onEnable() {
 
@@ -204,58 +257,5 @@ public final class TrialEconomy extends JavaPlugin implements Listener {
   private void disable(@Nullable String message) {
     if (message != null) logger.warning(message);
     getPluginLoader().disablePlugin(this);
-  }
-
-  /**
-   * Gets the account for a player.
-   *
-   * <p><b>NOTE:</b> Use {@link TrialEconomy#hasAccount(UUID)} to check if the player has an account
-   * before using this method.
-   *
-   * @param offlinePlayer The player associated with the account.
-   * @return The account of the player.
-   * @throws NullPointerException Thrown if the player doesn't have an account.
-   */
-  @NotNull
-  public static PlayerAccount getAccount(@NotNull OfflinePlayer offlinePlayer) {
-
-    PlayerAccount account = INSTANCE.accounts.get(offlinePlayer.getUniqueId());
-
-    if (account != null) return account;
-
-    try {
-
-      account = INSTANCE.database.getAccount(offlinePlayer);
-
-      if (account == null) {
-        throw new NullPointerException(
-            "No account exists for the player: " + offlinePlayer.getName());
-      }
-
-      return account;
-
-    } catch (SQLException e) {
-      INSTANCE.disable("A MySQL error occurred.");
-      e.printStackTrace();
-    }
-
-    //noinspection ConstantConditions
-    return null;
-  }
-
-  /**
-   * @param playerId The player ID to test.
-   * @return Returns true if the player has an account.
-   */
-  public static boolean hasAccount(@NotNull UUID playerId) {
-
-    try {
-      return INSTANCE.accounts.containsKey(playerId) || INSTANCE.database.hasAccount(playerId);
-    } catch (SQLException e) {
-      INSTANCE.disable("A MySQL error occurred.");
-      e.printStackTrace();
-    }
-
-    return false;
   }
 }
