@@ -1,4 +1,4 @@
-package com.projecki.trialeconomy;
+package com.asledgehammer.trialeconomy;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;

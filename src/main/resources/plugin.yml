@@ -1,7 +1,7 @@
 name: TrialEconomy
 version: '${project.version}'
-author: Jab
-main: com.projecki.trialeconomy.TrialEconomy
+author: JabDoesThings
+main: com.asledgehammer.trialeconomy.TrialEconomy
 api-version: 1.17
 commands:
   balance:

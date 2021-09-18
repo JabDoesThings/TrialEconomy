@@ -1,4 +1,4 @@
-package com.projecki.trialeconomy;
+package com.asledgehammer.trialeconomy;
 
 import lombok.AccessLevel;
 import lombok.Getter;
